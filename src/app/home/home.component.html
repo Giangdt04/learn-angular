@@ -1,0 +1,22 @@
+<!-- <h1>click is an event</h1>
+  <button (click) = "handleClick()">{{ nameButton }}</button>
+
+  <div>Message: {{ clickMessage }}</div>
+
+  <input type="text" (keyup)="updateField()">
+
+  <input type="text" [(ngModel)]="bindingMessage" placeholder="two write binding"/>
+  <div>Message: {{ bindingMessage }}</div> -->
+
+<div class="wrapper-cart">
+  <h1>shopping cart</h1>
+
+  <div *ngIf="isVisible">
+    <app-product-item
+      [products]="products"
+      (dataEvent)="handleDelete($event)"
+    ></app-product-item>
+  </div>
+
+  <button (click)="handleChangeVisible()">Visible False</button>
+</div>
