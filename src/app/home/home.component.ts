@@ -10,7 +10,7 @@ import { map, Subscription } from 'rxjs';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterOutlet, ProductItemComponent, NgIf],
+  imports: [ProductItemComponent, NgIf],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
