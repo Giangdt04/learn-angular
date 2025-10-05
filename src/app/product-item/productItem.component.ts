@@ -21,12 +21,14 @@ import { NgClass, NgFor } from '@angular/common';
     RouterLink,
   ],
   templateUrl: './productItem.component.html',
-  styleUrls: ['./productItem.component.css'],
+  styleUrls: ['./productItem.component.css', ],
 })
 export class ProductItemComponent implements OnChanges, OnDestroy {
     @Input() products: ProductItems[] = [];
 
     @Output() dataEvent = new EventEmitter<number>();
+
+      currentYear: number = new Date().getFullYear();
 
     get totalPrice(): string{
       const sum = this.products.reduce((total, item) => {

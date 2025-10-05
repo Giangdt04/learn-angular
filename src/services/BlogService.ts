@@ -1,18 +1,23 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { ResponseData } from "../app/types/responseData";
 import { BlogItem, ProductItems } from "../app/types/productItem";
+import { ApiResponse, Page } from "../model/product.model";
 
 @Injectable({ providedIn: 'root' })
 export class BlogService {
-    constructor(private http: HttpClient) {
+    private http= inject(HttpClient);
+    constructor() {
         
     
     }
 
-    getBlog(): Observable<ResponseData<ProductItems[]>> {
-        return this.http.get<any>('https://ninedev-api.vercel.app/blogs')
+    getProducts(params?: any): Observable<ApiResponse<Page<ProductItems>>> {
+        return this.http.get<ApiResponse<Page<ProductItems>>>(
+            'http://localhost:8080/identity/product', 
+            { params }
+        );
     }
 
     detailBlog(id: number): Observable<ResponseData<ProductItems>>{

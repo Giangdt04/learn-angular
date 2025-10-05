@@ -1,8 +1,42 @@
-<div class="wrapper-cart">
-    <h1>Detail Product</h1>
-    <div style="padding: 0 3rem; color: #fff;">
-        <img src="{{ productItem.image }}" alt="img4" width="30%" height="auto">
-        <h3>Name: {{ productItem.name }}</h3>
-        <h3>Price: {{ productItem.price }}</h3>
+<div *ngIf="product; else loading" class="detail-container">
+  <!-- Hình ảnh sản phẩm -->
+  <div class="image-section">
+    <img
+      [src]="selectedImageUrl || getMainImage()"
+      [alt]="product?.name"
+      class="main-image"
+    />
+
+    <!-- Thumbnail nếu có nhiều ảnh -->
+    <div *ngIf="hasMultipleImages" class="thumbnail-list">
+      <img
+        *ngFor="let img of product?.images"
+        [src]="img.imageUrl"
+        [alt]="product?.name"
+        [class.active]="img.imageMain || selectedImageUrl === img.imageUrl"
+        class="thumbnail"
+        (click)="onThumbnailClick(img.imageUrl!)"
+      />
     </div>
   </div>
+
+  <!-- Thông tin sản phẩm -->
+  <div class="info-section">
+    <h2 class="product-name">{{ product?.name }}</h2>
+    <p class="product-description">{{ product?.description }}</p>
+
+    <ul class="product-meta">
+      <li><strong>Code:</strong> {{ product?.code }}</li>
+      <li><strong>Status:</strong> {{ product?.status }}</li>
+      <li><strong>Quantity:</strong> {{ product?.quantity }}</li>
+      <li><strong>Created by:</strong> {{ product?.createdBy }}</li>
+      <li><strong>Updated by:</strong> {{ product?.updatedBy }}</li>
+    </ul>
+
+    <h3 class="price">{{ product?.price | number:'1.0-0' }} đ</h3>
+  </div>
+</div>
+
+<ng-template #loading>
+  <p class="loading-text">Loading product detail...</p>
+</ng-template>

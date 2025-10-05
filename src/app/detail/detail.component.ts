@@ -1,38 +1,60 @@
-import { Component, NgModule, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterOutlet } from '@angular/router';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { CommonModule, NgIf, NgFor, NgClass, DecimalPipe } from '@angular/common';
 import { ProductItems } from '../types/productItem';
-import { BlogService } from '../../services/BlogService';
-
+import { ProductService } from '../../services/product.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-detail',
   standalone: true,
-  imports: [
-    RouterOutlet,
-
-    ],
   templateUrl: './detail.component.html',
-  styleUrls: ['./detail.component.css']
+  styleUrls: ['./detail.component.css'],
+  imports: [CommonModule, NgIf, NgFor, NgClass, DecimalPipe]
 })
 export class DetailComponent implements OnInit {
-  id = '';
-  productItem: ProductItems ={
-    id: 0,
-    image: '',
-    name: '',
-    price: 0,
-  }
-  
-  constructor(private route: ActivatedRoute, private blogService: BlogService){
-    this.id = String(route.snapshot.paramMap.get('id'));
-  }
+  product?: ProductItems;
+  private destroyRef = inject(DestroyRef);
+  selectedImageUrl: string | null = null;
+
+  constructor(
+    private route: ActivatedRoute,
+    private productService: ProductService
+  ) {}
 
   ngOnInit(): void {
-      this.blogService.detailBlog(+this.id).subscribe(({ data }: any) =>{
-        this.productItem.id = data.id;
-        this.productItem.image = 'assets/images/gundam4.png';
-        this.productItem.name = data.title;
-        this.productItem.price = data.body;
+    // Lắng nghe thay đổi param id
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const id = params.get('id');
+        if (id) {
+          this.loadProduct(id);
+        }
       });
+  }
+
+  private loadProduct(id: string): void {
+    this.productService.getProductById(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(res => {
+        this.product = res.result;
+      });
+  }
+
+  getMainImage(): string {
+    const mainImg = this.product?.images?.find(img => img.imageMain);
+    return mainImg?.imageUrl ?? 'assets/images/default.png';
+  }
+
+onThumbnailClick(url: string | undefined) {
+  if (url) {
+    this.selectedImageUrl = url;
+  }
+}
+
+
+  get hasMultipleImages(): boolean {
+    return (this.product?.images?.length ?? 0) > 1;
   }
 }
