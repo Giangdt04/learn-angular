@@ -21,8 +21,10 @@ export class LoginComponent {
   showForgotPasswordModal = false;
   showOtpModal = false;
   showResetPasswordModal = false;
+  isSending = false;
 
   forgotEmail: string = '';
+  forgotUsername: string = '';
   forgotMessage: string = '';
 
   otpCode: string = '';
@@ -54,7 +56,6 @@ export class LoginComponent {
     .subscribe((res: any) => {
         if (res?.result?.authenticated) {
             alert("Đăng nhập thành công!"); // Có thể thay thế bằng modal đẹp hơn
-            console.log("Token:", res.result.token);
             // Lưu token vào localStorage nếu cần
             localStorage.setItem("authToken", res.result.token);
             this.router.navigateByUrl('') // Điều hướng về trang chủ
@@ -96,19 +97,30 @@ export class LoginComponent {
   }
 
    onForgotPassword() {
+    if (!this.forgotUsername) {
+      this.forgotMessage = "Vui lòng nhập username.";
+      return;
+    }
     if (!this.forgotEmail) {
       this.forgotMessage = "Vui lòng nhập email.";
       return;
     }
 
-    this.http.post(`http://localhost:8080/identity/auth/forgot-password?email=${encodeURIComponent(this.forgotEmail)}`,{})
+    if (this.isSending) return;
+    this.isSending = true;
+    this.forgotMessage = "";
+    
+    this.http.post(`http://localhost:8080/identity/auth/forgot-password?email=${encodeURIComponent(this.forgotEmail)}&username=${encodeURIComponent(this.forgotUsername)}`,{})
       .subscribe({
         next: () => {
-          this.forgotMessage = "";
+          this.forgotUsername = "";
+          this.forgotEmail = "";
+          this.isSending = false;
           this.showForgotPasswordModal = false; // đóng modal nhập email
           this.showOtpModal = true; // mở modal OTP
         },
         error: (err) => {
+          this.isSending = false;
           this.forgotMessage = err?.error?.message || "Không thể gửi yêu cầu. Vui lòng thử lại.";
         }
       });
