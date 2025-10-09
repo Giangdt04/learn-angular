@@ -1,4 +1,5 @@
 <!-- Trang chủ Shop Gundam -->
+ 
 <section class="hero">
   <picture>
     <!-- Thay ảnh theo kích thước bạn có trong assets -->
@@ -6,7 +7,7 @@
     <source media="(min-width: 640px)" srcset="assets/images/717760.jpg" />
     <img
       class="hero__bg"
-      src="assets/images/717760.jpg"
+      src="/src/assets/images/717760.jpg"
       alt="Gundam showcase background"
     />
   </picture>
@@ -89,13 +90,16 @@
 <section class="featured container">
   <header class="section-header">
     <h2>Sản phẩm tốt nhất</h2>
+
     <div class="segmented">
       <button class="segmented__item segmented__item--active" type="button">
         New
       </button>
+      <input type="text" class="product-search" placeholder="Tìm kiếm sản phẩm..." (keyup.enter)="onSearch($event)">
       <button class="segmented__item" type="button">Best Sellers</button>
       <button class="segmented__item" type="button">Sale</button>
     </div>
+    
   </header>
 
   <!-- Nếu sau này bạn bind *ngFor từ API thì thay block card tĩnh này -->
@@ -118,8 +122,8 @@
   </div>
 </article>
 
+
   </div>
-</section>
 
 <!-- Banner khuyến mãi -->
 <section class="promo">

@@ -4,6 +4,7 @@ import { CommonModule, NgIf, NgFor, NgClass, DecimalPipe } from '@angular/common
 import { ProductItems } from '../types/productItem';
 import { ProductService } from '../../services/product.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { sendViewEvent } from '../../services/event.service';
 
 @Component({
   selector: 'app-detail',
@@ -22,6 +23,24 @@ export class DetailComponent implements OnInit {
     private productService: ProductService
   ) {}
 
+  private loadProduct(id: string): void {
+  this.productService.getProductById(id)
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe(async res => {
+      this.product = res.result;
+
+      // ✅ Gửi sự kiện "VIEW" lên backend khi xem chi tiết
+      if (this.product?.id) {
+        try {
+          await sendViewEvent(this.product.id);
+          console.log('✅ View event sent:', this.product.id);
+        } catch (err) {
+          console.error('❌ Error sending view event:', err);
+        }
+      }
+    });
+}
+
   ngOnInit(): void {
     // Lắng nghe thay đổi param id
     this.route.paramMap
@@ -34,13 +53,13 @@ export class DetailComponent implements OnInit {
       });
   }
 
-  private loadProduct(id: string): void {
-    this.productService.getProductById(id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(res => {
-        this.product = res.result;
-      });
-  }
+  // private loadProduct(id: string): void {
+  //   this.productService.getProductById(id)
+  //     .pipe(takeUntilDestroyed(this.destroyRef))
+  //     .subscribe(res => {
+  //       this.product = res.result;
+  //     });
+  // }
 
   getMainImage(): string {
     const mainImg = this.product?.images?.find(img => img.imageMain);
