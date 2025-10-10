@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule, NgIf, NgFor, NgClass, DecimalPipe } from '@angular/common';
 import { ProductItems } from '../types/productItem';
 import { ProductService } from '../../services/product.service';
+import { CartService } from '../../services/cart.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -19,7 +20,8 @@ export class DetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private productService: ProductService
+    private productService: ProductService,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
@@ -56,5 +58,11 @@ onThumbnailClick(url: string | undefined) {
 
   get hasMultipleImages(): boolean {
     return (this.product?.images?.length ?? 0) > 1;
+  }
+
+  addToCart(): void {
+    if (!this.product) return;
+    this.cartService.addToCart(this.product);
+    alert('Đã thêm sản phẩm vào giỏ hàng!');
   }
 }

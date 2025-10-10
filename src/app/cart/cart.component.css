@@ -1,0 +1,39 @@
+.cart-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+th, td {
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  padding: 10px;
+}
+
+button {
+  cursor: pointer;
+  margin: 0 3px;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: red;
+}
+
+.empty-cart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  text-align: center;
+  font-size: 25px;
+  color: #555;
+  font-weight: bold;
+}

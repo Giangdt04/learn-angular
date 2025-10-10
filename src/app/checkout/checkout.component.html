@@ -1,0 +1,83 @@
+<div class="checkout-container">
+  <h2>Thanh toán</h2>
+  
+  <h3>Sản phẩm đã chọn</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Ảnh</th>
+        <th>Sản phẩm</th>
+        <th>Giá</th>
+        <th>Số lượng</th>
+        <th>Tổng</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of selectedItems">
+        <!-- Ảnh nhỏ -->
+        <td>
+          <img 
+            [src]="item.images?.[0]?.imageUrl || 'assets/images/default.png'" 
+            [alt]="item.name" 
+            style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"
+          />
+        </td>
+
+        <!-- Tên sản phẩm -->
+        <td>{{ item.name }}</td>
+
+        <!-- Giá -->
+        <td>{{ item.price | number }} đ</td>
+
+        <!-- Số lượng -->
+        <td>{{ item.quantity }}</td>
+
+        <!-- Tổng tiền -->
+        <td>{{ (item.price * (item.quantity || 1)) | number }} đ</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Tổng tiền:</strong> {{ total | number }} đ</p>
+
+  <h3>Thông tin nhận hàng</h3>
+  <form (ngSubmit)="confirmOrder()">
+    <div>
+      <label>Họ và tên:</label>
+      <input type="text" [(ngModel)]="customer.fullName" name="fullName" required />
+    </div>
+
+    <div>
+      <label>Email:</label>
+      <input type="email" [(ngModel)]="customer.email" name="email" required />
+    </div>
+
+    <div>
+      <label>Số điện thoại:</label>
+      <input type="tel" [(ngModel)]="customer.phone" name="phone" required />
+    </div>
+
+    <div>
+      <label>Tỉnh/Thành phố:</label>
+      <select [(ngModel)]="customer.city" (change)="onCityChange()" name="city" required>
+        <option value="">-- Chọn --</option>
+        <option *ngFor="let c of cities" [value]="c.Name">{{ c.Name }}</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Xã/Phường:</label>
+      <select [(ngModel)]="customer.ward" name="ward" required>
+        <option value="">-- Chọn --</option>
+        <option *ngFor="let w of wards" [value]="w.Name">{{ w.Name }}</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Địa chỉ (Số nhà, tên đường):</label>
+      <input type="text" [(ngModel)]="customer.address" name="address" required />
+    </div>
+
+    <button type="submit">Xác nhận thanh toán</button>
+  </form>
+</div>
