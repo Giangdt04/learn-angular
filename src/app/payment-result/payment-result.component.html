@@ -1,0 +1,19 @@
+<div class="payment-container">
+  <div *ngIf="paymentInfo">
+    <div *ngIf="paymentInfo.paymentStatus === 'success'" class="success">
+      <h2>🎉 Thanh toán thành công!</h2>
+      <p><strong>Cổng thanh toán:</strong> {{ this.gateway }}</p>
+      <p *ngIf="paymentInfo.transactionId">
+        <strong>Mã giao dịch:</strong> {{ paymentInfo.transactionId }}
+      </p>
+      <p><strong>Số tiền:</strong> {{ paymentInfo.amount | number }} VND</p>
+      <button (click)="goHome()">Về trang chủ</button>
+    </div>
+
+    <div *ngIf="paymentInfo.paymentStatus !== 'success'" class="fail">
+      <h2>❌ Thanh toán thất bại!</h2>
+      <p>Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.</p>
+      <button (click)="goHome()">Quay lại</button>
+    </div>
+  </div>
+</div>

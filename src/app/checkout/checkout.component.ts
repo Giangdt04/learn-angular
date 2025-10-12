@@ -26,6 +26,7 @@ export class CheckoutComponent {
     address: '',
   };
 
+  paymentMethod: string = 'cod'; // mặc định
   cities: any[] = [];
   wards: any[] = [];
 
@@ -57,7 +58,6 @@ export class CheckoutComponent {
     this.http
       .get<any[]>('assets/data/full_json_generated_data_vn_units.json')
       .subscribe((data) => {
-        // Lọc chỉ những object là province
         this.cities = data.filter((x) => x.Type === 'province');
       });
   }
@@ -81,12 +81,93 @@ export class CheckoutComponent {
       return;
     }
 
-    alert('Thanh toán thành công! Cảm ơn bạn đã mua hàng');
+    if (!this.paymentMethod) {
+      alert('Vui lòng chọn phương thức thanh toán!');
+      return;
+    }
 
-    this.selectedItems.forEach((item) => {
-      this.cartService.removeItem(item.id);
-    });
+    const itemIds = this.selectedItems.map((i) => i.id);
 
-    this.router.navigate(['/home']);
+    // Thanh toán VNPay
+    if (this.paymentMethod === 'vnpay') {
+      const amount = this.total;
+      const orderInfo = `Thanh toan don hang cua ${this.customer.fullName}`;
+
+      // Lưu tạm itemIds trước khi redirect
+      localStorage.setItem('checkoutItemIds', JSON.stringify(itemIds));
+
+      this.http
+        .post('http://localhost:8080/identity/payment/submitOrder', null, {
+          params: { amount: amount.toString(), orderInfo },
+          responseType: 'text',
+        })
+        .subscribe({
+          next: (paymentUrl) => {
+            window.location.href = paymentUrl; // redirect sang VNPay
+          },
+          error: (err) => {
+            console.error(err);
+            alert('Không thể kết nối VNPay. Vui lòng thử lại sau!');
+          },
+        });
+      return;
+    }
+
+    // Thanh toán Momo (mô phỏng)
+    if (this.paymentMethod === 'momo') {
+      const amount = this.total;
+      const orderInfo = generateOrderId();
+      console.log('Order Info (MoMo):', orderInfo);
+      // const orderInfo = `Thanh toan don hang cua ${this.customer.fullName}-${Date.now()}`;
+      const itemIds = this.selectedItems.map(item => item.id);
+      localStorage.setItem('checkoutItemIds', JSON.stringify(itemIds));
+
+      this.http.post<any>('http://localhost:8080/identity/momo', null, {
+        params: { amount: amount.toString(), orderInfo },
+      }).subscribe({
+        next: (res) => {
+          console.log('MoMo response:', res);
+          if (res && res.payUrl) {
+            window.location.href = res.payUrl; // redirect đúng sang MoMo
+          } else if (res && res.message) {
+            alert('MoMo trả về: ' + res.message);
+          } else {
+            alert('Không nhận được payUrl từ MoMo.');
+          }
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Không thể kết nối MoMo. Vui lòng thử lại sau!');
+        }
+      });
+      return;
+    }
+
+    // Thanh toán COD
+    if (this.paymentMethod === 'cod') {
+      // Lưu itemIds để PaymentResultComponent xóa giỏ hàng
+      localStorage.setItem('checkoutItemIds', JSON.stringify(itemIds));
+      this.router.navigate(['/payment-result'], {
+        state: {
+          gateway: 'cod',
+          paymentStatus: 'success',
+          amount: this.total,
+          itemIds,
+        },
+      });
+    }
   }
+}
+
+function generateOrderId(): string {
+  const now = new Date();
+  
+  const year = now.getFullYear().toString();
+  const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Tháng 0-11
+  const day = now.getDate().toString().padStart(2, '0');
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+
+  return `${year}${month}${day}${hours}${minutes}${seconds}`;
 }
