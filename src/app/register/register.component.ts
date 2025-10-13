@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { NotificationService } from '../../services/notification.service';
 
 interface RegisterRequest {
   username: string;
@@ -32,6 +33,7 @@ export class RegisterComponent {
 
   private http = inject(HttpClient);
   private router = inject(Router);
+  private notificationService = inject(NotificationService);
 
   onFileSelected(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -63,7 +65,8 @@ export class RegisterComponent {
 
     this.http.post('http://localhost:8080/identity/users/register', formData).subscribe({
       next: () => {
-        alert('🎉 Đăng ký thành công!');
+        // alert('Đăng ký thành công!');
+        this.notificationService.show('success', 'Đăng ký thành công!');
         this.errorMessage = '';
         this.router.navigate(['/login']);
       },

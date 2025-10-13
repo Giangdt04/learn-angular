@@ -22,7 +22,6 @@ export class MomoReturnComponent implements OnInit {
         orderId: params['orderId']
       };
 
-      // Chuyển sang component hiển thị kết quả
       this.router.navigate(['/payment-result'], { state });
     });
   }

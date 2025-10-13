@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { ProductItems } from '../types/productItem';
 import { HttpClient } from '@angular/common/http';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-checkout',
@@ -33,7 +34,8 @@ export class CheckoutComponent {
   constructor(
     private cartService: CartService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -41,7 +43,8 @@ export class CheckoutComponent {
     this.selectedItems = nav.items || [];
 
     if (!this.selectedItems.length) {
-      alert('Chưa có sản phẩm nào được chọn để thanh toán!');
+      // alert('Chưa có sản phẩm nào được chọn để thanh toán!');
+      this.notificationService.show('warning', 'Chưa có sản phẩm nào được chọn để thanh toán!');
       this.router.navigate(['/cart']);
       return;
     }
@@ -77,12 +80,14 @@ export class CheckoutComponent {
       !this.customer.ward ||
       !this.customer.address
     ) {
-      alert('Vui lòng điền đầy đủ thông tin nhận hàng!');
+      // alert('Vui lòng điền đầy đủ thông tin nhận hàng!');
+      this.notificationService.show('warning', 'Vui lòng điền đầy đủ thông tin nhận hàng!');
       return;
     }
 
     if (!this.paymentMethod) {
-      alert('Vui lòng chọn phương thức thanh toán!');
+      // alert('Vui lòng chọn phương thức thanh toán!');
+      this.notificationService.show('warning', 'Vui lòng chọn phương thức thanh toán!');
       return;
     }
 
@@ -93,7 +98,6 @@ export class CheckoutComponent {
       const amount = this.total;
       const orderInfo = `Thanh toan don hang cua ${this.customer.fullName}`;
 
-      // Lưu tạm itemIds trước khi redirect
       localStorage.setItem('checkoutItemIds', JSON.stringify(itemIds));
 
       this.http
@@ -103,17 +107,18 @@ export class CheckoutComponent {
         })
         .subscribe({
           next: (paymentUrl) => {
-            window.location.href = paymentUrl; // redirect sang VNPay
+            window.location.href = paymentUrl;
           },
           error: (err) => {
             console.error(err);
-            alert('Không thể kết nối VNPay. Vui lòng thử lại sau!');
+            // alert('Không thể kết nối VNPay. Vui lòng thử lại sau!');
+            this.notificationService.show('error', 'Không thể kết nối VNPay. Vui lòng thử lại sau!');
           },
         });
       return;
     }
 
-    // Thanh toán Momo (mô phỏng)
+    // Thanh toán Momo
     if (this.paymentMethod === 'momo') {
       const amount = this.total;
       const orderInfo = generateOrderId();
@@ -128,16 +133,17 @@ export class CheckoutComponent {
         next: (res) => {
           console.log('MoMo response:', res);
           if (res && res.payUrl) {
-            window.location.href = res.payUrl; // redirect đúng sang MoMo
+            window.location.href = res.payUrl;
           } else if (res && res.message) {
-            alert('MoMo trả về: ' + res.message);
+            // alert('MoMo trả về: ' + res.message);
           } else {
-            alert('Không nhận được payUrl từ MoMo.');
+            // alert('Không nhận được payUrl từ MoMo.');
           }
         },
         error: (err) => {
           console.error(err);
-          alert('Không thể kết nối MoMo. Vui lòng thử lại sau!');
+          // alert('Không thể kết nối MoMo. Vui lòng thử lại sau!');
+          this.notificationService.show('error', 'Không thể kết nối MoMo. Vui lòng thử lại sau!');
         }
       });
       return;
@@ -145,7 +151,6 @@ export class CheckoutComponent {
 
     // Thanh toán COD
     if (this.paymentMethod === 'cod') {
-      // Lưu itemIds để PaymentResultComponent xóa giỏ hàng
       localStorage.setItem('checkoutItemIds', JSON.stringify(itemIds));
       this.router.navigate(['/payment-result'], {
         state: {

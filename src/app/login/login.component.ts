@@ -3,6 +3,7 @@ import { Component, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { CommonModule } from '@angular/common';
+import { NotificationService } from "../../services/notification.service";
 
 @Component({
   selector: 'app-login',
@@ -36,8 +37,9 @@ export class LoginComponent {
 
   private http = inject(HttpClient);
   private router = inject(Router);
+  private notificationService = inject(NotificationService);
 
-  // 🚀 Đăng nhập
+  // Đăng nhập
   onLogin() {
     this.errorMessage = '';
 
@@ -56,36 +58,39 @@ export class LoginComponent {
       next: (res: any) => {
         console.log("Login response:", res);
         if (res?.result?.authenticated && res?.result?.token) {
-          // ✅ Lưu token mới
+          // Lưu token mới
           localStorage.setItem("access_token", res.result.token);
 
-          alert("🎉 Đăng nhập thành công!");
+          // alert("Đăng nhập thành công!");
+          this.notificationService.show('success', 'Đăng nhập thành công!');
           this.router.navigateByUrl('/');
         } else {
           this.errorMessage = res?.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.";
-          alert(this.errorMessage);
+          // alert(this.errorMessage);
+          this.notificationService.show('error', this.errorMessage);
         }
       },
       error: (err) => {
         console.error("Lỗi đăng nhập:", err);
         this.errorMessage = err?.error?.message || "Yêu cầu đăng nhập thất bại. Vui lòng thử lại sau.";
-        alert(this.errorMessage);
+        // alert(this.errorMessage);
+        this.notificationService.show('error', this.errorMessage);
       }
     });
   }
 
-  // 👉 Điều hướng sang trang đăng ký
+  // Điều hướng sang trang đăng ký
   goToRegister(): void {
     this.router.navigate(['/register']);
   }
 
-  // 👉 Mở modal quên mật khẩu
+  // Mở modal quên mật khẩu
   openForgotPasswordModal(event: Event) {
     event.preventDefault();
     this.showForgotPasswordModal = true;
   }
 
-  // 👉 Đóng modal
+  // Đóng modal
   closeForgotPasswordModal() {
     this.showForgotPasswordModal = false;
   }
@@ -93,7 +98,7 @@ export class LoginComponent {
     this.showOtpModal = false;
   }
 
-  // 🚀 Gửi email quên mật khẩu
+  // Gửi email quên mật khẩu
   onForgotPassword() {
     if (!this.forgotUsername) {
       this.forgotMessage = "Vui lòng nhập username.";
@@ -125,7 +130,7 @@ export class LoginComponent {
     });
   }
 
-  // 🚀 Xác thực mã OTP
+  // Xác thực mã OTP
   onVerifyOtp() {
     if (!this.otpCode) {
       this.otpMessage = "Vui lòng nhập mã OTP.";
@@ -138,7 +143,7 @@ export class LoginComponent {
     )
     .subscribe({
       next: () => {
-        this.otpMessage = "✅ Xác nhận thành công! Giờ bạn có thể đặt lại mật khẩu.";
+        this.otpMessage = "Xác nhận thành công! Giờ bạn có thể đặt lại mật khẩu.";
         this.showOtpModal = false;
         this.showResetPasswordModal = true;
       },
@@ -148,7 +153,7 @@ export class LoginComponent {
     });
   }
 
-  // 🚀 Đặt lại mật khẩu
+  // Đặt lại mật khẩu
   onResetPassword() {
     if (!this.newPassword) {
       this.resetMessage = "Vui lòng nhập mật khẩu mới.";
@@ -161,7 +166,7 @@ export class LoginComponent {
     )
     .subscribe({
       next: () => {
-        this.resetMessage = '✅ Đặt lại mật khẩu thành công!';
+        this.resetMessage = 'Đặt lại mật khẩu thành công!';
         setTimeout(() => {
           this.showResetPasswordModal = false;
           this.newPassword = "";

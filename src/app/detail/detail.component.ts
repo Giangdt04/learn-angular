@@ -5,6 +5,7 @@ import { ProductItems } from '../types/productItem';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-detail',
@@ -21,7 +22,8 @@ export class DetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private productService: ProductService,
-    private cartService: CartService
+    private cartService: CartService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -63,6 +65,7 @@ onThumbnailClick(url: string | undefined) {
   addToCart(): void {
     if (!this.product) return;
     this.cartService.addToCart(this.product);
-    alert('Đã thêm sản phẩm vào giỏ hàng!');
+    // alert('Đã thêm sản phẩm vào giỏ hàng!');
+    this.notificationService.show('success', 'Thêm giỏ hàng thành công!');
   }
 }

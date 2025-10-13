@@ -6,7 +6,7 @@ import { CartService } from '../../services/cart.service';
 @Component({
   selector: 'app-payment-result',
   standalone: true,
-  imports: [CommonModule], // <--- thêm CommonModule
+  imports: [CommonModule],
   templateUrl: './payment-result.component.html',
   styleUrls: ['./payment-result.component.css'],
 })

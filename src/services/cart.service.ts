@@ -20,7 +20,7 @@ export class CartService {
   /** Lưu giỏ hàng vào localStorage và cập nhật Subject */
   private saveCart(cart: (ProductItems & { quantity?: number })[]) {
     localStorage.setItem(this.cartKey, JSON.stringify(cart));
-    this.cartSubject.next(cart); // 👈 phát sự kiện cho component biết
+    this.cartSubject.next(cart); // phát sự kiện cho component biết
   }
 
   /** Thêm sản phẩm vào giỏ */
@@ -46,7 +46,7 @@ export class CartService {
   /** Xóa toàn bộ giỏ hàng */
   clearCart() {
     localStorage.removeItem(this.cartKey);
-    this.cartSubject.next([]); // 👈 phát ra giỏ hàng trống
+    this.cartSubject.next([]); // phát ra giỏ hàng trống
   }
 
   /** Xóa các sản phẩm đã thanh toán */

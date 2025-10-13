@@ -13,9 +13,8 @@ export class VnpayReturnComponent implements OnInit {
     this.route.queryParams.subscribe((query) => {
       const success = query['vnp_ResponseCode'] === '00';
       const amount = Number(query['vnp_Amount']) / 100;
-      const itemIds = history.state.itemIds || []; // Nếu đã lưu trước khi redirect VNPay
+      const itemIds = history.state.itemIds || [];
 
-      // Chuyển sang trang kết quả
       this.router.navigate(['/payment-result'], {
         state: {
           gateway: 'vnpay',

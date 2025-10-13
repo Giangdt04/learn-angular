@@ -46,8 +46,10 @@
 
   <div class="cart-summary">
     <p><strong>Tổng tiền (đã chọn):</strong> {{ selectedTotal | number }} đ</p>
-    <button (click)="clearCart()">Xóa giỏ hàng</button>
-    <button [disabled]="!hasSelected()" (click)="checkout()">Thanh toán</button>
+    <div class="summary-actions">
+      <button (click)="clearCart()">Xóa giỏ hàng</button>
+      <button [disabled]="!hasSelected()" (click)="checkout()">Thanh toán</button>
+    </div>
   </div>
 </div>
 
