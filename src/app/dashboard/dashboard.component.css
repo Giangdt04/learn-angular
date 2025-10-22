@@ -1,0 +1,188 @@
+/* ====== CONTAINER ====== */
+.container {
+  font-family: "Inter", sans-serif;
+  background: #f9fafc;
+  min-height: 100vh;
+  padding: 24px;
+  color: #333;
+}
+
+/* ====== HEADER ====== */
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #222;
+}
+
+.header .emoji {
+  margin-right: 8px;
+}
+
+/* ====== DASHBOARD GRID ====== */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 cột đều nhau */
+  gap: 24px;
+}
+
+/* Responsive: khi nhỏ hơn 900px thì tự xuống 1 cột */
+@media (max-width: 900px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ====== CARD ====== */
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* ====== SUBTITLE ====== */
+.subtitle {
+  font-size: 13px;
+  color: #777;
+  margin-left: 4px;
+}
+
+/* ====== STATUS (LIVE) ====== */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.live-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: gray;
+  display: inline-block;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.live-dot.live {
+  background: #ff4747;
+  box-shadow: 0 0 6px 2px rgba(255, 71, 71, 0.5);
+}
+
+.status-text {
+  color: #555;
+}
+
+/* ====== SELECT (COMBOBOX) ====== */
+select {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+select:hover {
+  border-color: #999;
+}
+
+select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* ====== LIST ITEM ====== */
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 6px;
+  border-top: 1px solid #f0f0f0;
+  transition: background 0.2s ease;
+}
+
+.list-item:hover {
+  background-color: #f9fafc;
+}
+
+.rank {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rank-number {
+  background-color: #e9ecef;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rank-number.top3 {
+  background-color: #ffd700;
+  color: #222;
+}
+
+.item-info {
+  font-size: 14px;
+}
+
+.growth {
+  font-size: 13px;
+  color: #22c55e;
+}
+
+.stats {
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+}
+
+/* ====== EMPTY STATE ====== */
+.empty {
+  text-align: center;
+  color: #999;
+  padding: 12px;
+  font-size: 14px;
+}
+
+/* ====== FOOTER ====== */
+footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 13px;
+  color: #777;
+}
+
+
+

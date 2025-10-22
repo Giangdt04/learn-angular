@@ -3,7 +3,6 @@ import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { ResponseData } from "../app/types/responseData";
 import { BlogItem, ProductItems } from "../app/types/productItem";
-import { ApiResponse, Page } from "../model/product.model";
 
 @Injectable({ providedIn: 'root' })
 export class BlogService {
@@ -13,11 +12,8 @@ export class BlogService {
     
     }
 
-    getProducts(params?: any): Observable<ApiResponse<Page<ProductItems>>> {
-        return this.http.get<ApiResponse<Page<ProductItems>>>(
-            'http://localhost:8080/identity/product', 
-            { params }
-        );
+    getBlog(): Observable<ResponseData<ProductItems[]>> {
+        return this.http.get<any>('http://localhost:8080/identity/product')
     }
 
     detailBlog(id: number): Observable<ResponseData<ProductItems>>{

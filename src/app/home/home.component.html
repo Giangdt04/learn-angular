@@ -1,5 +1,5 @@
 <!-- Trang chủ Shop Gundam -->
- 
+
 <section class="hero">
   <picture>
     <!-- Thay ảnh theo kích thước bạn có trong assets -->
@@ -95,108 +95,134 @@
       <button class="segmented__item segmented__item--active" type="button">
         New
       </button>
-      <input type="text" class="product-search" placeholder="Tìm kiếm sản phẩm..." (keyup.enter)="onSearch($event)">
+
+      <!-- Ô tìm kiếm -->
+      <div class="search-wrapper">
+        <input
+          id="searchBox"
+          type="text"
+          class="product-search"
+          placeholder="Tìm kiếm sản phẩm..."
+          [(ngModel)]="searchTerm"
+          (input)="onInputChange()"
+          (focus)="onInputFocus()"
+          (keyup.enter)="onSearch($event)"
+        />
+
+        <ul
+          *ngIf="showSuggestions && suggestions.length > 0"
+          class="autocomplete-list"
+        >
+          <li *ngFor="let s of suggestions">
+            <span (mousedown)="selectSuggestion(s)">{{ s }}</span>
+            <button type="button" class="delete-btn" (click)="removeHistory(s)">
+              ✕
+            </button>
+          </li>
+        </ul>
+      </div>
+
       <button class="segmented__item" type="button">Best Sellers</button>
       <button class="segmented__item" type="button">Sale</button>
     </div>
-    
   </header>
 
-  <!-- Nếu sau này bạn bind *ngFor từ API thì thay block card tĩnh này -->
+  <!-- Danh sách sản phẩm -->
   <div class="product-grid">
-    <article *ngFor="let product of products" class="product-card" (click)="viewDetail(product.id)">
-  <!-- Thumbnail -->
-  <div class="product-card__thumb">
-    <img [src]="getMainImage(product)" [alt]="product?.name" />
+    <article
+      *ngFor="let product of products"
+      class="product-card"
+      (click)="viewDetail(product.id)"
+    >
+      <div class="product-card__thumb">
+        <img [src]="getMainImage(product)" [alt]="product?.name" />
+      </div>
+
+      <div class="product-card__body">
+        <h3 class="product-card__title">{{ product.name }}</h3>
+        <div class="price">
+          <span class="price__now">{{ product.price | number }} đ</span>
+        </div>
+        <button class="btn btn--block btn--primary" type="button">
+          Thêm vào giỏ
+        </button>
+      </div>
+    </article>
   </div>
 
-  <!-- Thông tin sản phẩm -->
-  <div class="product-card__body">
-    <h3 class="product-card__title">{{ product.name }}</h3>
-    <div class="price">
-      <span class="price__now">{{ product.price | number }} đ</span>
-    </div>
-    <button class="btn btn--block btn--primary" type="button">
-      Thêm vào giỏ
-    </button>
-  </div>
-</article>
-
-
-  </div>
-
-<!-- Banner khuyến mãi -->
-<section class="promo">
-  <div class="promo__inner container">
-    <div class="promo__text">
-      <h3>Flash Sale cuối tuần</h3>
-      <p>Giảm đến 20% cho series UC – số lượng có hạn.</p>
-      <a class="btn btn--white" routerLink="/sale">Săn ngay</a>
-    </div>
-    <img
-      class="promo__img"
-      src="assets/banners/uc-sale.png"
-      alt="Universal Century sale"
-    />
-  </div>
-</section>
-
-<!-- Blog / Hướng dẫn -->
-<section class="blog container">
-  <header class="section-header">
-    <h2>Hướng dẫn & Tin tức</h2>
-    <a routerLink="/blog" class="link">Xem blog</a>
-  </header>
-  <div class="blog__grid">
-    <a class="blog-card" routerLink="/blog/panel-lining-guide">
-      <img src="assets/blog/panel-lining.jpg" alt="Panel lining guide" />
-      <h3>Panel Lining: 5 phút nâng tầm kit</h3>
-      <p>Mẹo chọn bút, làm sạch & bảo quản.</p>
-    </a>
-    <a class="blog-card" routerLink="/blog/top-10-rg">
-      <img src="assets/blog/top-rg.jpg" alt="Top 10 RG" />
-      <h3>Top 10 RG đáng mua 2025</h3>
-      <p>Danh sách cập nhật theo độ khó & độ đẹp.</p>
-    </a>
-    <a class="blog-card" routerLink="/blog/clear-coat">
-      <img src="assets/blog/clear-coat.jpg" alt="Clear coat finishes" />
-      <h3>Clear Coat: Gloss vs Matte</h3>
-      <p>Khi nào nên xịt bóng/mờ cho Gunpla.</p>
-    </a>
-  </div>
-</section>
-
-<!-- Newsletter -->
-<section class="newsletter">
-  <div class="newsletter__inner container">
-    <div>
-      <h3>Nhận tin ra mắt & ưu đãi</h3>
-      <p>Đừng bỏ lỡ hàng P-Bandai hiếm – vào trước là có!</p>
-    </div>
-    <form class="newsletter__form" (submit)="$event.preventDefault()">
-      <input
-        class="input"
-        type="email"
-        placeholder="Email của bạn"
-        aria-label="Email"
+  <!-- Banner khuyến mãi -->
+  <section class="promo">
+    <div class="promo__inner container">
+      <div class="promo__text">
+        <h3>Flash Sale cuối tuần</h3>
+        <p>Giảm đến 20% cho series UC – số lượng có hạn.</p>
+        <a class="btn btn--white" routerLink="/sale">Săn ngay</a>
+      </div>
+      <img
+        class="promo__img"
+        src="assets/banners/uc-sale.png"
+        alt="Universal Century sale"
       />
-      <button class="btn btn--primary" type="submit">Đăng ký</button>
-    </form>
-  </div>
-</section>
+    </div>
+  </section>
 
-<!-- Footer rút gọn -->
-<footer class="footer">
-  <div class="container footer__inner">
-    <a class="brand" routerLink="/">Gundam Store</a>
-    <nav class="footer__nav" aria-label="Footer">
-      <a routerLink="/about">Về chúng tôi</a>
-      <a routerLink="/shipping">Vận chuyển</a>
-      <a routerLink="/contact">Liên hệ</a>
-      <a routerLink="/policy">Chính sách</a>
-    </nav>
-    <p class="footer__copy">
-      © {{ currentYear }} Gundam Store. All rights reserved.
-    </p>
-  </div>
-</footer>
+  <!-- Blog / Hướng dẫn -->
+  <section class="blog container">
+    <header class="section-header">
+      <h2>Hướng dẫn & Tin tức</h2>
+      <a routerLink="/blog" class="link">Xem blog</a>
+    </header>
+    <div class="blog__grid">
+      <a class="blog-card" routerLink="/blog/panel-lining-guide">
+        <img src="assets/blog/panel-lining.jpg" alt="Panel lining guide" />
+        <h3>Panel Lining: 5 phút nâng tầm kit</h3>
+        <p>Mẹo chọn bút, làm sạch & bảo quản.</p>
+      </a>
+      <a class="blog-card" routerLink="/blog/top-10-rg">
+        <img src="assets/blog/top-rg.jpg" alt="Top 10 RG" />
+        <h3>Top 10 RG đáng mua 2025</h3>
+        <p>Danh sách cập nhật theo độ khó & độ đẹp.</p>
+      </a>
+      <a class="blog-card" routerLink="/blog/clear-coat">
+        <img src="assets/blog/clear-coat.jpg" alt="Clear coat finishes" />
+        <h3>Clear Coat: Gloss vs Matte</h3>
+        <p>Khi nào nên xịt bóng/mờ cho Gunpla.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter">
+    <div class="newsletter__inner container">
+      <div>
+        <h3>Nhận tin ra mắt & ưu đãi</h3>
+        <p>Đừng bỏ lỡ hàng P-Bandai hiếm – vào trước là có!</p>
+      </div>
+      <form class="newsletter__form" (submit)="$event.preventDefault()">
+        <input
+          class="input"
+          type="email"
+          placeholder="Email của bạn"
+          aria-label="Email"
+        />
+        <button class="btn btn--primary" type="submit">Đăng ký</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer rút gọn -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <a class="brand" routerLink="/">Gundam Store</a>
+      <nav class="footer__nav" aria-label="Footer">
+        <a routerLink="/about">Về chúng tôi</a>
+        <a routerLink="/shipping">Vận chuyển</a>
+        <a routerLink="/contact">Liên hệ</a>
+        <a routerLink="/policy">Chính sách</a>
+      </nav>
+      <p class="footer__copy">
+        © {{ currentYear }} Gundam Store. All rights reserved.
+      </p>
+    </div>
+  </footer>
+</section>

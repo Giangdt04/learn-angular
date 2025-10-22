@@ -260,5 +260,114 @@ a{color:inherit; text-decoration:none}
   background: rgba(0,0,0,0.3); /* giảm alpha để badges rõ hơn */
   z-index: 1;
 }
+/* Ô input tìm kiếm */
+.product-search {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 14px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.product-search:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Danh sách dropdown */
+.autocomplete-list {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 250px;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: -2px;
+  z-index: 1000;
+  list-style: none;
+  padding: 0;
+}
+
+/* Từng item trong dropdown */
+.autocomplete-list li {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.autocomplete-list li:hover {
+  background-color: #f0f8ff;
+}
+
+/* Nếu bạn muốn item đầu tiên bo tròn trên cùng */
+.autocomplete-list li:first-child {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+/* Khi gợi ý đang được focus */
+.autocomplete-list li.active {
+  background-color: #007bff;
+  color: white;
+}
+/* Container dropdown */
+.autocomplete-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #fff;
+  position: absolute;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Mỗi item trong dropdown */
+.autocomplete-list li {
+  display: flex;
+  justify-content: space-between; /* keyword + button ở 2 đầu */
+  align-items: center;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.autocomplete-list li:hover {
+  background-color: #f0f0f0;
+}
+
+/* keyword text */
+.autocomplete-list li span {
+  flex: 1; /* chiếm phần còn lại */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* nút xóa */
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 5px;
+  margin-left: 10px;
+}
+
+.delete-btn:hover {
+  color: red;
+}
+
 
 

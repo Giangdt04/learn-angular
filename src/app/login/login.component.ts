@@ -1,21 +1,25 @@
-import { HttpClient } from "@angular/common/http";
-import { Component, inject } from "@angular/core";
-import { FormsModule, NgModel } from "@angular/forms";
-import { Router } from "@angular/router";
-import { CommonModule } from '@angular/common'; // Thêm CommonModule cho *ngIf
+
+import { HttpClient } from '@angular/common/http';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { jwtDecode } from 'jwt-decode';
+
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [FormsModule, CommonModule], // Đảm bảo FormsModule và CommonModule được import
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
- // Đã đổi styleUrl thành styleUrls nếu bạn sử dụng nhiều file CSS
+
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-  user: any = {
-    "username": "",
-    "pass": ""
+  user = {
+    username: '',
+    pass: '',
+
   };
 
   showForgotPasswordModal = false;
@@ -50,29 +54,47 @@ export class LoginComponent {
         return;
     }
 
-    this.http.post("http://localhost:8080/identity/auth/token", this.user, {
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .subscribe((res: any) => {
-        if (res?.result?.authenticated) {
-            alert("Đăng nhập thành công!"); // Có thể thay thế bằng modal đẹp hơn
-            // Lưu token vào localStorage nếu cần
-            localStorage.setItem("authToken", res.result.token);
-            this.router.navigateByUrl('') // Điều hướng về trang chủ
-        } else {
-            this.errorMessage = res?.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.";
-            alert(this.errorMessage); // Hiển thị thông báo thất bại
-        }
-    }, error => {
-        console.error("Lỗi đăng nhập:", error);
-        if (error?.error?.message) {
-            this.errorMessage = error.error.message; // Hiển thị lỗi từ backend
+
+    this.http
+      .post('http://localhost:8080/identity/auth/token', this.user, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .subscribe({
+        next: (res: any) => {
+          console.log('Login response:', res);
+          if (res?.result?.authenticated && res?.result?.token) {
+            // ✅ Lưu token mới
+            const token = res.result.token;
+            localStorage.setItem('access_token', token);
+            alert('🎉 Đăng nhập thành công!');
+
+            const decoded: any = jwtDecode<any>(token);
+            console.log('Decoded token:', decoded);
+
+            const scope: string = decoded?.scope || '';
+            const roles = scope.split(' ');
+            
+            if (roles.includes('ROLE_ADMIN')) {
+              this.router.navigateByUrl('/dashboard');
+            } else {
+              this.router.navigateByUrl('/');
+            }
+          } else {
+            this.errorMessage =
+              res?.message ||
+              'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
             alert(this.errorMessage);
-        } else {
-            this.errorMessage = "Yêu cầu đăng nhập thất bại. Vui lòng thử lại sau.";
-            alert(this.errorMessage);
-        }
-    });
+          }
+        },
+        error: (err) => {
+          console.error('Lỗi đăng nhập:', err);
+          this.errorMessage =
+            err?.error?.message ||
+            'Yêu cầu đăng nhập thất bại. Vui lòng thử lại sau.';
+          alert(this.errorMessage);
+        },
+      });
+
   }
   
   // Thêm lại các hàm điều hướng để template HTML không báo lỗi
@@ -98,75 +120,97 @@ export class LoginComponent {
 
    onForgotPassword() {
     if (!this.forgotUsername) {
-      this.forgotMessage = "Vui lòng nhập username.";
+      this.forgotMessage = 'Vui lòng nhập username.';
       return;
     }
     if (!this.forgotEmail) {
-      this.forgotMessage = "Vui lòng nhập email.";
+      this.forgotMessage = 'Vui lòng nhập email.';
       return;
     }
 
     if (this.isSending) return;
     this.isSending = true;
-    this.forgotMessage = "";
-    
-    this.http.post(`http://localhost:8080/identity/auth/forgot-password?email=${encodeURIComponent(this.forgotEmail)}&username=${encodeURIComponent(this.forgotUsername)}`,{})
+
+    this.forgotMessage = '';
+
+    this.http
+      .post(
+        `http://localhost:8080/identity/auth/forgot-password?email=${encodeURIComponent(
+          this.forgotEmail
+        )}&username=${encodeURIComponent(this.forgotUsername)}`,
+        {}
+      )
       .subscribe({
         next: () => {
-          this.forgotUsername = "";
-          this.forgotEmail = "";
           this.isSending = false;
-          this.showForgotPasswordModal = false; // đóng modal nhập email
-          this.showOtpModal = true; // mở modal OTP
+          this.showForgotPasswordModal = false;
+          this.showOtpModal = true;
         },
         error: (err) => {
           this.isSending = false;
-          this.forgotMessage = err?.error?.message || "Không thể gửi yêu cầu. Vui lòng thử lại.";
-        }
+          this.forgotMessage =
+            err?.error?.message || 'Không thể gửi yêu cầu. Vui lòng thử lại.';
+        },
+
       });
   }
 
    onVerifyOtp() {
     if (!this.otpCode) {
-      this.otpMessage = "Vui lòng nhập mã OTP.";
+      this.otpMessage = 'Vui lòng nhập mã OTP.';
       return;
     }
 
-    this.http.post(`http://localhost:8080/identity/auth/verify-code?email=${encodeURIComponent(this.forgotEmail)}&token=${encodeURIComponent(this.otpCode)}`, {}
-  ).subscribe({
-      next: () => {
-        this.otpMessage = "✅ Xác nhận thành công! Giờ bạn có thể đặt lại mật khẩu.";
-        this.otpCode = "";
-        this.showOtpModal = false;
-        this.showResetPasswordModal = true;
-      },
-      error: (err) => {
-        this.otpMessage = err?.error?.message || "Mã OTP không hợp lệ.";
-      }
-    });
+
+    this.http
+      .post(
+        `http://localhost:8080/identity/auth/verify-code?email=${encodeURIComponent(
+          this.forgotEmail
+        )}&token=${encodeURIComponent(this.otpCode)}`,
+        {}
+      )
+      .subscribe({
+        next: () => {
+          this.otpMessage =
+            '✅ Xác nhận thành công! Giờ bạn có thể đặt lại mật khẩu.';
+          this.showOtpModal = false;
+          this.showResetPasswordModal = true;
+        },
+        error: (err) => {
+          this.otpMessage = err?.error?.message || 'Mã OTP không hợp lệ.';
+        },
+      });
+
   }
 
    onResetPassword() {
     if (!this.newPassword) {
-      this.resetMessage = "Vui lòng nhập mật khẩu mới.";
+      this.resetMessage = 'Vui lòng nhập mật khẩu mới.';
       return;
     }
 
-    this.http.post<any>(
-      `http://localhost:8080/identity/auth/reset-password?email=${this.forgotEmail}&newPassword=${this.newPassword}`,
-      {}
-    ).subscribe({
-      next: () => {
-        this.resetMessage = '✅ Đặt lại mật khẩu thành công!';
-        setTimeout(() => {
-          this.showResetPasswordModal = false;
-          this.newPassword="";
-        }, 1500);
-      },
-      error: (err) => {
-        this.resetMessage = err.error?.message || 'Đặt lại mật khẩu thất bại';
-      }
-    });
+
+    this.http
+      .post(
+        `http://localhost:8080/identity/auth/reset-password?email=${encodeURIComponent(
+          this.forgotEmail
+        )}&newPassword=${encodeURIComponent(this.newPassword)}`,
+        {}
+      )
+      .subscribe({
+        next: () => {
+          this.resetMessage = '✅ Đặt lại mật khẩu thành công!';
+          setTimeout(() => {
+            this.showResetPasswordModal = false;
+            this.newPassword = '';
+          }, 1500);
+        },
+        error: (err) => {
+          this.resetMessage =
+            err?.error?.message || 'Đặt lại mật khẩu thất bại.';
+        },
+      });
+
   }
   
 }

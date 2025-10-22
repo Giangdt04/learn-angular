@@ -1,0 +1,166 @@
+<div class="container">
+  <!-- HEADER -->
+  <header class="header">
+    <h1>
+      <span class="emoji">📊</span>
+      <span class="title-text">Analytics Dashboard</span>
+    </h1>
+  </header>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard">
+    <!-- 📈 Top 3 sản phẩm tăng trưởng tốt nhất -->
+    <div class="card">
+      <div class="card-title">
+        <div class="card-title">
+          📈 Top 3 sản phẩm tăng trưởng tốt nhất
+          <small class="subtitle">
+            ({{ last7DaysRange }} so với {{ prev7DaysRange }})
+          </small>
+        </div>
+      </div>
+
+      <ng-container *ngIf="productTrending.length > 0; else noTrending">
+        <div
+          *ngFor="let item of productTrending | slice : 0 : 3; let i = index"
+          class="list-item"
+        >
+          <div class="rank">
+            <div class="rank-number" [class.top3]="i < 3">{{ i + 1 }}</div>
+            <div class="item-info">
+              <div class="item-name">Mã sản phẩm: {{ item.productId }}</div>
+              <div class="growth">
+                Tăng: {{ item.growthPercent | number : "1.0-2" }}%
+              </div>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="count">
+              {{ item.currentViews | number : "1.0-0" }} lượt xem
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #noTrending>
+        <div class="empty">Chưa có dữ liệu tăng trưởng.</div>
+      </ng-template>
+    </div>
+
+    <!-- 🧩 Top 5 chủ đề được quan tâm nhất -->
+    <div class="card">
+      <div class="card-title flex items-center justify-between">
+        <span>🧩 Top 5 chủ đề được quan tâm nhất</span>
+
+        <!-- 👇 Thêm combobox chọn khoảng thời gian -->
+        <select
+          class="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white cursor-pointer"
+          [(ngModel)]="selectedPeriod"
+          (change)="onPeriodChange()"
+        >
+          <option *ngFor="let option of periodOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <ng-container *ngIf="categoryTrending.length > 0; else noCategory">
+        <div
+          *ngFor="let item of categoryTrending | slice : 0 : 5; let i = index"
+          class="list-item"
+        >
+          <div class="rank">
+            <div class="rank-number" [class.top3]="i < 3">{{ i + 1 }}</div>
+            <div class="item-info">
+              <div class="item-name">{{ item.categoryName }}</div>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="count">
+              {{ item.totalViews | number : "1.0-0" }} lượt xem
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #noCategory>
+        <div class="empty">Chưa có dữ liệu chủ đề.</div>
+      </ng-template>
+    </div>
+
+    <!-- 🔥 Top 10 sản phẩm realtime -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          🔥 Top 10 sản phẩm được xem nhiều nhất (REAL-TIME)
+        </div>
+
+        <div class="status-indicator">
+          <span class="live-dot" [class.live]="isConnected"></span>
+          <span class="status-text">
+            {{ isConnected ? "Đang kết nối (LIVE)" : "Mất kết nối" }}
+          </span>
+        </div>
+      </div>
+
+      <ng-container *ngIf="topProducts.length > 0; else noProducts">
+        <div *ngFor="let item of topProducts; let i = index" class="list-item">
+          <div class="rank">
+            <div class="rank-number" [class.top3]="i < 3">{{ i + 1 }}</div>
+            <div class="item-info">Mã sản phẩm: {{ item.productId }}</div>
+          </div>
+          <div class="stats">
+            <div class="count">
+              {{ item.viewCount | number : "1.0-0" }} lượt xem
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #noProducts>
+        <div class="empty">Chưa có dữ liệu sản phẩm.</div>
+      </ng-template>
+    </div>
+
+    <!-- 🔍 Top 10 từ khóa realtime -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          🔍 Top 10 từ khóa tìm kiếm nhiều nhất (REAL-TIME)
+        </div>
+
+        <div class="status-indicator">
+          <span class="live-dot" [class.live]="isConnected"></span>
+          <span class="status-text">
+            {{ isConnected ? "Đang kết nối (LIVE)" : "Mất kết nối" }}
+          </span>
+        </div>
+      </div>
+
+      <ng-container *ngIf="topKeywords.length > 0; else noKeywords">
+        <div *ngFor="let item of topKeywords; let i = index" class="list-item">
+          <div class="rank">
+            <div class="rank-number" [class.top3]="i < 3">{{ i + 1 }}</div>
+            <div class="item-info">Từ khóa: {{ item.keyword }}</div>
+          </div>
+          <div class="stats">
+            <div class="count">
+              {{ item.searchCount | number : "1.0-0" }} lượt tìm kiếm
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #noKeywords>
+        <div class="empty">Chưa có dữ liệu từ khóa.</div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    Cập nhật lần cuối: <strong>{{ lastUpdate }}</strong> | Real-time Analytics
+    System
+  </footer>
+</div>

@@ -49,6 +49,7 @@
   border-color: #007bff;
   transform: scale(1.05);
 }
+
 /* Section thông tin */
 .info-section {
   flex: 1 1 400px;
